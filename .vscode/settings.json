@@ -1,0 +1,6 @@
+{
+  "nim.buildOnSave": false,
+  "nim.buildCommand": "c",
+  "nim.lintOnSave": true,
+  "nim.project": ["tests/all_tests.nim"]
+}
