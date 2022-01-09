@@ -3,11 +3,11 @@ import
   std/cpuinfo,
   std/strformat,
   std/threadpool,
-  charbuffer,
+  aboisvert_utils/filebuffer,
+  aboisvert_utils/stringbuilder,
   counter,
   filter,
   keyfinder,
-  stringbuilder,
   utils
 
 when defined(profiling):
@@ -105,8 +105,7 @@ proc readAll(s: Segment, filter: Filters, kf: KeyFinder): SegmentResult {.gcsafe
   defer: reader.close()
 
   reader.setFilePos(s.start)
-
-  var buffer = initCharBuffer(reader)
+  var buffer = initFileBuffer(reader)
 
   if s.start != 0:
     # read and discard partial line

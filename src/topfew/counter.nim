@@ -25,6 +25,12 @@ type SegmentCounter* = CountTable[string]
 proc compact(t: var Counter): void
 proc topAsSortedList*(t: var Counter): seq[KeyCount]
 
+proc initCountTableForRelease[T](capacity: int): CountTable[T] =
+  when defined(release) or defined(danger):
+    initCountTable[string](capacity)
+  else:
+    initCountTable[string](0)
+
 
 proc initCounter*(size: int): Counter =
   ## creates a new empty counter, ready for use. size controls how many top items to track.

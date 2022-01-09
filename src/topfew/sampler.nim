@@ -1,7 +1,7 @@
 import
   keyfinder,
   filter,
-  stringbuilder
+  aboisvert_utils/stringbuilder
 
 
 proc sample*(file: File, filters: Filters, kf: KeyFinder) =

@@ -1,5 +1,5 @@
 import std/re
-import stringbuilder
+import aboisvert_utils/stringbuilder
 
 type Sed* = object
   ## Sed represents a sed(1) s/a/b/g operation.

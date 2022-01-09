@@ -1,9 +1,9 @@
 import
   std/strformat,
+  aboisvert_utils/stringbuilder,
   counter,
   filter,
-  keyfinder,
-  stringbuilder
+  keyfinder
 
 proc fromStream*(file: File, filters: Filters, kf: KeyFinder, size: int): seq[KeyCount] =
   ## FromStream reads a stream and hand each line to the top-occurrence counter. Really only used on stdin.

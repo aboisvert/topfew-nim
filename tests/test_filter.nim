@@ -1,7 +1,7 @@
 import
   std/unittest,
   topfew/filter,
-  topfew/stringbuilder
+  aboisvert_utils/stringbuilder
 
 {.used.}
 

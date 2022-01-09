@@ -1,18 +1,13 @@
-import
-  std/macros,
-  std/tables
-
-macro toString(name: untyped): untyped =
-  newLit(name.repr)
+import std/tables
 
 template debug*(name: untyped, strs: varargs[string]) =
   when defined(debug) and defined(name):
     var args = ""
     for str in strs: args.add str
-    echo toString(name), ": ", args
+    echo newLit(name).repr, ": ", args
 
 proc initCountTableForRelease*[T](capacity: int): CountTable[T] =
-  when defined(release):
+  when defined(release) or defined(danger):
     initCountTable[string](capacity)
   else:
     initCountTable[string](0)
