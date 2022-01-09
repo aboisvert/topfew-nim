@@ -2,8 +2,8 @@
 
 This is a Nim port of Tim Bray's `topfew` program.
 
-[TopFew introduction](https://www.tbray.org/ongoing/When/202x/2021/03/27/Topfew-and-Amdahl) (Blog post)
-[Original TopFew implementation](https://github.com/timbray/topfew) (GitHub link)
+* [TopFew introduction](https://www.tbray.org/ongoing/When/202x/2021/03/27/Topfew-and-Amdahl) (Blog post)
+* [Original TopFew implementation](https://github.com/timbray/topfew) (GitHub link)
 
 ## Why?
 
