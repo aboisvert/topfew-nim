@@ -13,7 +13,7 @@ suite "Streaming":
     check: file != nil
     defer: file.close()
 
-    let kf = initKeyFinder(@[1.uint])
+    let kf = initKeyFinder(@[1])
     let f = Filters()
     let x = fromStream(file, f, kf, 5)
 
@@ -29,4 +29,4 @@ suite "Streaming":
     check: len(x) == len(wanted)
 
     for kc in x:
-      check: kc.count == wanted[kc.key].uint64
+      check: kc.count == wanted[kc.key]

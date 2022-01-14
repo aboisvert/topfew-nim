@@ -31,20 +31,20 @@ suite "KeyFinder":
 
     block:
       let singles = @["x", "b", "b"]
-      let kf = initKeyFinder(@[2.uint])
+      let kf = initKeyFinder(@[2])
       for i, record in records:
         kf.getKey(record, key)
         check: key == singles[i]
 
     block:
-      let kf = initKeyFinder(@[1.uint, 3])
+      let kf = initKeyFinder(@[1, 3])
       for recordstring in records:
         let record = recordstring
         kf.getKey(record, key)
         check: key == "a c"
 
     block:
-      let kf = initKeyFinder(@[1.uint, 4])
+      let kf = initKeyFinder(@[1, 4])
       let tooShorts = @["a", "a b", "a b c"]
       for tooShort in tooShorts:
         expect(ValueError):

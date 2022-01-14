@@ -13,7 +13,7 @@ suite "Segmenter":
     let fname = "tests/data/small"
     let filters = Filters()
     var counter = initCounter(2)
-    let kf = initKeyFinder(@[1.uint])
+    let kf = initKeyFinder(@[1])
 
     readFileInSegments(fname, filters, counter, kf, numSegments = 1)
 

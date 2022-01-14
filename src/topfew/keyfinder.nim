@@ -12,23 +12,19 @@ type KeyFinder* = object
   ## KeyFinder extracts a key based on the specified fields from a record.
   ## fields is a slice of small integers representing field numbers;
   ## 1-based on the command line, 0-based here.
-  fields: seq[uint]
-  #key:    string
+  fields: seq[int]
 
 
-proc initKeyFinder*(keys: seq[uint]): KeyFinder =
+proc initKeyFinder*(keys: seq[int]): KeyFinder =
   ## creates a new key finder with the supplied field numbers, the input should be 1 based.
   ## KeyFinder is not threadsafe, you should Clone it for each goroutine that uses it.
-  result = KeyFinder(fields: keys #[, key: ""]#)
+  result = KeyFinder(fields: keys)
 
 
 proc clone*(kf: KeyFinder): KeyFinder =
   ## returns a new KeyFinder with the same configuration. Each goroutine should use its own
   ## KeyFinder instance.
-  return KeyFinder(
-    fields: kf.fields,
-    #[ key:    "" ]#
-  )
+  return KeyFinder(fields: kf.fields)
 
 template findNextFieldIndex(record: openArray[char], index: var int) =
   # eat leading space
@@ -72,16 +68,14 @@ proc getKey*(kf: KeyFinder, record: openArray[char], key: var string) {.inline.}
 
   # if there are no keyfinders just return the record, minus any trailing newlines
   if len(kf.fields) == 0:
-    if record.len > 0 and record[^1] == '\n': extractKey(key, record)
-    else: extractKey(key, record)
+    extractKey(key, record)
     return
 
   key.setLen 0
-  var field = 1.uint  # fields are 1-based
+  var field = 1  # fields are 1-based
   var index = 0
   var first = true
 
-  # for each field in the key
   for keyField in kf.fields:
     # bypass fields before the one we want
     while field < keyField:

@@ -50,14 +50,14 @@ proc usage(error: string, exception: ref Exception = nil) =
     quit(0)
 
 # forward declarations
-proc parseFields(spec: string): seq[uint]
+proc parseFields(spec: string): seq[int]
 
 
 proc main() =
   var size = 10
   var error: ref Exception
   var err: string = ""
-  var fields: seq[uint]
+  var fields: seq[int]
   var cpuprofile: string
   var tracefname: string
   var fname: string
@@ -136,13 +136,14 @@ proc main() =
   for kc in topList:
     echo fmt"{kc.count} {kc.key}"
 
+  quit(0)
 
-proc parseFields(spec: string): seq[uint] =
+proc parseFields(spec: string): seq[int] =
   let parts = spec.split(",")
   var num: int
   for part in parts:
     num = parseInt(part)
-    result.add(num.uint)
+    result.add(num)
 
 
 when isMainModule:

@@ -34,7 +34,7 @@ suite "Counter":
 
     for kc in x:
       check:
-        kc.count == wanted[kc.key].uint64
+        kc.count == wanted[kc.key]
 
   test "TestTable_Add":
     var table = initCounter(5)
@@ -51,11 +51,11 @@ suite "Counter":
 
     for key in keys: table.inc(key)
 
-    let n4 = uint64(4)
-    let n5 = uint64(5)
-    let n6 = uint64(6)
-    let n7 = uint64(7)
-    let n8 = uint64(8)
+    let n4 = 4
+    let n5 = 5
+    let n6 = 6
+    let n7 = 7
+    let n8 = 8
 
     block:
       let wanted = [
