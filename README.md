@@ -66,13 +66,9 @@ Intel(R) Core(TM) i5-8400H CPU @ 2.50GHz (1 socket; 4 cores; hyperthreading enab
 Linux 5.13.0-25-generic #26-Ubuntu SMP Fri Jan 7 15:48:31 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux`
 ```
 
+## Expressiveness
 
-## Takeaways
-
-
-### Expressiveness
-
-Since the programs follow the same structure and algorithm, the line counts are comparable, although the Nim code is a bit shorter.
+At this time, since the Nim version is basically a transliteration (read: follows the same structure and algorithm as the go-lang implementation), the line counts are comparable, although the Nim code is a bit shorer.
 
 ```sh
 $ find . -type f -name "*.go" | grep -v test | xargs wc -l
