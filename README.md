@@ -3,111 +3,72 @@
 This is a Nim port of Tim Bray's `topfew` program.
 
 * [TopFew introduction](https://www.tbray.org/ongoing/When/202x/2021/03/27/Topfew-and-Amdahl) (Blog post)
-* [Original TopFew implementation](https://github.com/timbray/topfew) (GitHub link)
+* [Original go-lang TopFew implementation](https://github.com/timbray/topfew) (GitHub link)
 
 ## Why?
 
 The intent was:
-- to explore the relative performance, expressiveness of Go vs Nim
+- to explore the relative performance, expressiveness of Go vs Nim vs Rust
 - learn more Nim in the process, particularly writing efficient/high-performance Nim code
+
+
+## Benchmarking
+
+1) Install the [Hyperfine](https://github.com/sharkdp/hyperfine) benchmarking tool
+
+2) (Optional) Set the `GO_CMD` and `RUST_CMD` environment variables to point to your pre-built Go-lang/Rust topfew executables, e.g.,
+
+```sh
+$ export GO_CMD=~/git/topfew/bin/tf
+```
+
+3) Run `nimble bench`
+
+PS: The `bench` Nimble task has only been tested (and written for) the Linux platform
+
+PPS: As of today (2022-01-15), the Rust version does not support the same feature set as the Nim/Go implementations.  It does not support single-threaded mode (`-w 1`), nor does it support regex-based filtering (`-g ...`), nor sed-style substitutions (`-s ...`).  For the most basic use-case, with field selection only (`-f ...`), it performs on par with the Go implementation on my system.
+
+## Results
+
+Here are sample results (as of January '22) from my laptop.
+
+In both current implementations, the performance story is mixed.  Performance is measured on a 486MB file (`access.log.xlarge`).
+
+### single-threaded
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `Nim` | 983.4 ± 107.0 | 916.0 | 1167.1 | 1.89 ± 0.33 |
+| `Go` | 520.4 ± 72.0 | 448.6 | 640.4 | 1.00 |
+
+### multi-threaded
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `Nim` | 316.1 ± 25.7 | 277.9 | 345.9 | 1.94 ± 0.22 |
+| `Go` | 163.0 ± 13.2 | 132.0 | 186.7 | 1.00 |
+
+### regex filter
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `Nim` | 742.4 ± 55.7 | 680.2 | 813.3 | 1.00 |
+| `Go` | 7583.4 ± 368.1 | 7215.2 | 8057.9 | 10.22 ± 0.91 |
+
+### sed substitutions
+| Command | Mean [s] | Min [s] | Max [s] | Relative |
+|:---|---:|---:|---:|---:|
+| `Nim` | 4.619 ± 0.061 | 4.526 | 4.688 | 4.55 ± 0.43 |
+| `Go` | 1.016 ± 0.095 | 0.847 | 1.064 | 1.00 |
+
+### Hardware
+
+```
+Dell Precision 5530 latop
+Intel(R) Core(TM) i5-8400H CPU @ 2.50GHz (1 socket; 4 cores; hyperthreading enabled - 2 threads/core)
+Linux 5.13.0-25-generic #26-Ubuntu SMP Fri Jan 7 15:48:31 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux`
+```
+
 
 ## Takeaways
 
-In both current implementations (December 2021), the performance story is mixed.
-
-Performance measured on a 486MB file:
-
-```sh
-$ ls -lh access.log.xlarge
--rw-rw-r-- 1 boisvert boisvert 486M Dec 29 21:05 access.log.xlarge
-```
-
-### Performance
-
-- The go-lang implementation is slightly faster when just selecting fields (-f argument alone). This appears to be due to the efficiency of goroutines vs startup overhead of threads in Nim
-
-
-```sh
-# Go-lang
-$ time tf -f 7 access.log.xlarge &> go.output
-...
-...
-...
-________________________________________________________
-Executed in  140.73 millis    fish           external
-   usr time  703.88 millis  1833.00 micros  702.05 millis
-   sys time  181.56 millis    0.00 micros  181.56 millis
-```
-
-```sh
-# Nim-lang
-$ time tf -f 7 access.log.xlarge &> go.output
-...
-...
-...
-________________________________________________________
-Executed in  252.49 millis    fish           external
-   usr time  1543.91 millis  1359.00 micros  1542.55 millis
-   sys time  201.45 millis  428.00 micros  201.02 millis
-
-```
-
-
-- The nim-lang implementation is faster when filtering using regex.  This appears to be due to a faster implementation of Regex in Nim.
-
-```sh
-# Go-lang
-$ time ./topfew -n 20 -f 7 -g 'googlebot|bingbot|Twitterbot' access.log.xlarge
-...
-...
-...
-________________________________________________________
-Executed in    5.77 secs   fish           external
-   usr time   45.19 secs    0.00 micros   45.19 secs
-   sys time    0.07 secs  520.00 micros    0.07 secs
-```
-
-```sh
-# Nim-lang
-$ time ./topfew -n 20 -f 7 -g 'googlebot|bingbot|Twitterbot' access.log.xlarge
-...
-...
-...
-________________________________________________________
-Executed in  573.41 millis    fish           external
-   usr time    4.07 secs    2.20 millis    4.06 secs
-   sys time    0.18 secs    0.00 millis    0.18 secs
-```
-
-
-- The go-lang implementation is faster when applying Sed expression.  This appears to be due to extra string allocations in Nim (I am still hunting those).
-
-```sh
-
-# Go-lang
-$ time tf -f 4 -s "\\[[^:]*:" "" -s ':.*$' '' -n 24 access.log.xlarge
-...
-...
-...
-________________________________________________________
-Executed in  778.18 millis    fish           external
-   usr time    4.14 secs   14.49 millis    4.13 secs
-   sys time    0.32 secs    0.45 millis    0.31 secs
-
-
-# Nim-lang
-$ time tf -f 4 -s "\\[[^:]*:" "" -s ':.*$' '' -n 24 access.log.xlarge
-...
-...
-...
-_______________________________________________________
-Executed in    3.58 secs   fish           external
-   usr time   12.85 secs  1075.00 micros   12.85 secs
-   sys time   12.31 secs  336.00 micros   12.31 secs
-
-$ time tf -f 4 -s "\\[[^:]*:" "" -s ':.*$' '' -n 24 access.log.xlarge
-
-```
 
 ### Expressiveness
 
