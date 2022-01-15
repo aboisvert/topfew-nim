@@ -32,7 +32,7 @@ PPS: As of today (2022-01-15), the Rust version does not support the same featur
 
 Here are sample results (as of January '22) from my laptop.
 
-In both current implementations, the performance story is mixed.  Performance is measured on a 486MB file (`access.log.xlarge`).
+In both current implementations, the performance story is mixed.  Performance is measured on a 486MB file (`access.log.xlarge`).  This file may be downloaded from https://alphagame.dev/ by adding `access.log.xlarge.gz` to the URL.
 
 ### single-threaded
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
