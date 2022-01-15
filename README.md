@@ -99,3 +99,5 @@ $ find . -type f -name "*.nim" | grep -v test | xargs wc -l
    30 ./src/topfew/streaming.nim
   627 total
 ```
+
+No attempts at optimizing the code size or code-golfing were made to reduce the LoCs of the Nim implementation.
