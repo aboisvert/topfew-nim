@@ -24,6 +24,9 @@ proc error(msg: string) =
   raise newException(Exception, msg)
   quit(1)
 
+proc escapeSingleQuotes(str: string): string =
+  str.multiReplace(("'", "\\'"))
+
 proc hyperfine(benchmark: string, commands: seq[tuple[name: string,
     cmd: string]]) =
   ## Runs `hyperfine` benchmarking tool on the provided `commands`
@@ -34,14 +37,23 @@ proc hyperfine(benchmark: string, commands: seq[tuple[name: string,
       (name: it.name, cmd: "/usr/bin/time -v -a -o benchmark-time.txt -- " & it.cmd)
     )
 
-  let commandStrs = commands.mapIt(
-    fmt" -n '{it.name}' '{it.cmd}'"
-  ).join("")
+  let commandStrs = commands.mapIt((
+    let name = escapeSingleQuotes(it.name);
+    let cmd = escapeSingleQuotes(it.cmd);
+    fmt"-n '{name}' '{cmd}'"
+  )).join(" ")
 
   echo fmt"Running {benchmark} test ..."
   exec fmt"echo '## {benchmark}' >> benchmark-results.md"
+  exec fmt"echo '```sh' >> benchmark-results.md"
+  let protoCommand = escapeSingleQuotes(commands[0].cmd)
+  exec fmt"echo '$ {protoCommand}' >> benchmark-results.md"
+  exec fmt"echo '```' >> benchmark-results.md"
 
-  exec fmt"hyperfine --warmup 3 --min-runs 5 --export-markdown benchmark-tmp.md {commandStrs}"
+  let verbose = false
+  let showOutput = if verbose: "--show-output" else: ""
+
+  exec fmt"hyperfine {showOutput} --warmup 3 --min-runs 5 --export-markdown benchmark-tmp.md {commandStrs}"
   exec "cat benchmark-tmp.md >> benchmark-results.md"
   exec "rm benchmark-tmp.md"
 

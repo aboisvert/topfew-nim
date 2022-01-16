@@ -11,6 +11,19 @@ The intent was:
 - to explore the relative performance, expressiveness of Go vs Nim vs Rust
 - learn more Nim in the process, particularly writing efficient/high-performance Nim code
 
+## Building
+
+For a debug build,
+
+```sh
+$ nimble build
+```
+
+For a production (optimized) build,
+
+```sh
+$ nimble -d:danger --opt:speed --passC:-flto --passL:-flto build
+```
 
 ## Benchmarking
 
@@ -34,29 +47,41 @@ Here are sample results (as of January '22) from my laptop.
 
 In both current implementations, the performance story is mixed.  Performance is measured on a 486MB file (`access.log.xlarge`).  This file may be downloaded from https://alphagame.dev/ by adding `access.log.xlarge.gz` to the URL.
 
-### single-threaded
+## single-threaded
+```sh
+$ ./topfew -w 1 -f 7 access.log.xlarge
+```
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
-| `Nim` | 983.4 ± 107.0 | 916.0 | 1167.1 | 1.89 ± 0.33 |
-| `Go` | 520.4 ± 72.0 | 448.6 | 640.4 | 1.00 |
+| `Nim` | 940.4 ± 57.9 | 878.1 | 1008.8 | 2.29 ± 0.14 |
+| `Go` | 410.7 ± 4.5 | 404.4 | 416.6 | 1.00 |
 
-### multi-threaded
+## multi-threaded
+```sh
+$ ./topfew -f 7 access.log.xlarge
+```
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
-| `Nim` | 316.1 ± 25.7 | 277.9 | 345.9 | 1.94 ± 0.22 |
-| `Go` | 163.0 ± 13.2 | 132.0 | 186.7 | 1.00 |
+| `Nim` | 314.3 ± 31.3 | 271.9 | 350.3 | 1.83 ± 0.23 |
+| `Go` | 171.7 ± 13.6 | 139.5 | 206.4 | 1.00 |
 
-### regex filter
+## regex filter
+```sh
+$ ./topfew -f 7 -g "googlebot|bingbot|Twitterbot" access.log.xlarge
+```
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
-| `Nim` | 742.4 ± 55.7 | 680.2 | 813.3 | 1.00 |
-| `Go` | 7583.4 ± 368.1 | 7215.2 | 8057.9 | 10.22 ± 0.91 |
+| `Nim` | 789.7 ± 21.6 | 762.3 | 818.1 | 1.00 |
+| `Go` | 7198.4 ± 131.9 | 7061.5 | 7366.0 | 9.12 ± 0.30 |
 
-### sed substitutions
+## sed substitutions
+```sh
+$ ./topfew -f 4 -s "\[[^:]*:" "" -s ":.*\$" "" -n 24 access.log.xlarge
+```
 | Command | Mean [s] | Min [s] | Max [s] | Relative |
 |:---|---:|---:|---:|---:|
-| `Nim` | 4.619 ± 0.061 | 4.526 | 4.688 | 4.55 ± 0.43 |
-| `Go` | 1.016 ± 0.095 | 0.847 | 1.064 | 1.00 |
+| `Nim` | 4.564 ± 0.077 | 4.476 | 4.635 | 5.44 ± 0.10 |
+| `Go` | 0.839 ± 0.006 | 0.834 | 0.847 | 1.00 |
 
 ### Hardware
 
