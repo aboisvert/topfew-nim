@@ -86,7 +86,7 @@ $ ./topfew -f 4 -s "\[[^:]*:" "" -s ":.*\$" "" -n 24 access.log.xlarge
 ### Hardware
 
 ```
-Dell Precision 5530 latop
+Dell Precision 5530 laptop
 Intel(R) Core(TM) i5-8400H CPU @ 2.50GHz (1 socket; 4 cores; hyperthreading enabled - 2 threads/core)
 Linux 5.13.0-25-generic #26-Ubuntu SMP Fri Jan 7 15:48:31 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux`
 ```
